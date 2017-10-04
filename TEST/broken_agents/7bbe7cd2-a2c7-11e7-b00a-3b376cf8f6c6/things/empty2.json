@@ -1,0 +1,20 @@
+{
+  "name": "Sensor #5",
+  "description": "no description",
+  "properties": {
+    "Case Used": "demonstration"
+  },
+  "Datastreams": [{
+    "name": "Empty",
+    "description": "Empty",
+    "unitOfMeasurement": {
+      "name": "integers",
+      "symbol": "int"
+    },
+    "Sensor": {
+      "name": "Sensor #5",
+      "description": "Temperature Sensor",
+      "encodingType": "application/json"
+    }
+  }]
+}

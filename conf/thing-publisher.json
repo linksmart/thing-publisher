@@ -1,0 +1,12 @@
+{
+  "id": "LSTP",
+  "description": "Linksmart ThingPublisher",
+  "broker": "tcp://localhost:1883",
+  "prefix": "LSTP/",
+  "validatetimer": 8,
+  "uuidgeneration": false,
+  "addthingarchive-topic": "addthingarchive",
+  "listthings-topic": "listthings",
+  "removething-topic": "removething",
+  "thingstatus-topic": "thingstatus"
+}

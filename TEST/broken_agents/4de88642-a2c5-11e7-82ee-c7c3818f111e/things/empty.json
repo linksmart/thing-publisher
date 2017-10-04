@@ -1,0 +1,8 @@
+{
+  "name": "Sensor #1",
+  "description": "Sensor system monitoring area temperature",
+  "properties": {
+    "Deployment Condition": "Deployed in a third floor balcony",
+    "Case Used": "Temperature shield"
+  }
+}

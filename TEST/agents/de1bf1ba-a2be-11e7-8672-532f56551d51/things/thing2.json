@@ -1,0 +1,21 @@
+{
+  "name": "TRNG Generator",
+  "description": "True random number generator dongle",
+  "properties": {
+    "Case Used": "demonstration"
+  },
+  "Datastreams": [{
+    "name": "Random Numbers",
+    "description": "Datastream for random numbers",
+    "unitOfMeasurement": {
+      "name": "integers",
+      "symbol": "int"
+    },
+    "Sensor": {
+      "name": "TRNG",
+      "description": "TRNG generator",
+      "encodingType": "application/json",
+      "metadata": "trng"
+    }
+  }]
+}

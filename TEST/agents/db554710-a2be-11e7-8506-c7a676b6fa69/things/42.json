@@ -1,0 +1,21 @@
+{
+  "name": "42",
+  "description": "Answer to everything",
+  "properties": {
+    "Case Used": "demonstration"
+  },
+  "Datastreams": [{
+    "name": "Answer",
+    "description": "Empty",
+    "unitOfMeasurement": {
+      "name": "integers",
+      "symbol": "int"
+    },
+    "Sensor": {
+      "name": "Answer",
+      "description": "Answering everything",
+      "encodingType": "application/json",
+      "metadata": "42.sh"
+    }
+  }]
+}
