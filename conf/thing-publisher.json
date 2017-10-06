@@ -1,7 +1,7 @@
 {
   "id": "LSTP",
   "description": "Linksmart ThingPublisher",
-  "broker": "tcp://localhost:1883",
+  "broker": "tcp://test.mosquitto.org:1883",
   "prefix": "LSTP/",
   "validatetimer": 8,
   "uuidgeneration": false,

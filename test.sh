@@ -8,7 +8,7 @@ fi
 if [ ! -d "./dropzone" ]; then
   mkdir dropzone
 fi
-go test -v
+go test -v $1
 test_status=$?
 if [ $test_status -ne 0 ]; then
     echo "command1 borked it"
