@@ -1,5 +1,7 @@
-GOPATH=´ṕwd´
 #!/bin/bash
+export GOPATH=$(pwd)
+echo $GOPATH
+ls -la
 if [ ! -d "./agents" ]; then
   mkdir agents
 fi
