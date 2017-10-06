@@ -11,6 +11,15 @@ import (
 	//"strconv"
 	"strconv"
 )
+
+//func TestNoAgents(t *testing.T){
+//
+//
+//	time.Sleep(1)
+//	t.Fail()
+//	os.Exit(1)
+//}
+
 // a preparation routine copy example agents for a test
 func prepare(){
 	s,_ := os.Getwd()
@@ -66,6 +75,7 @@ func TestThingLoadingAndValidation(t *testing.T) {
 
 	if len(manager.things) != expecting{
 		log.Panic("[TestThingLoadingAndValidation] Propper number for loaded and validated things should be ",expecting,". Found:",len(manager.things))
+		os.Exit(1)
 	}
 
 }
@@ -79,6 +89,7 @@ func TestAgentManagerShutdown(t *testing.T) {
 	time.Sleep(time.Second * 3)
 	if (!manager.stopAgentManager()) {
 		log.Panic("[TestAgentManagerShutdown] Agents did't stopped properly")
+		os.Exit(1)
 	}
 }
 
@@ -105,6 +116,7 @@ func TestAgentManagerWithDropzone(t *testing.T) {
 	time.Sleep(time.Second * 15)
 	if(len(manager.agents)!=expecting){
 		log.Panic("Expecting ",expecting," running agent. Found ",len(manager.agents))
+		os.Exit(1)
 	}else {
 		log.Println("Found ",len(manager.agents)," running agents. Good")
 	}
@@ -134,6 +146,7 @@ func TestAgentManagerWithDoppelgaengerAgent(t *testing.T) {
 	time.Sleep(time.Second * 15)
 	if(len(manager.agents)!=expecting){
 		log.Panic("Expecting ",expecting," running agent. Found ",len(manager.agents))
+		os.Exit(1)
 	}else {
 		log.Println("Found ",len(manager.agents)," running agents. Good")
 	}
@@ -161,12 +174,14 @@ func TestAgentOutput(t *testing.T) {
 		if data.AgentId=="Temperature"{
 			if string(data.Payload) != "20.0"{
 				log.Panic("[TestAgentExecution] expecting 20.0 from Temperature agent")
+				os.Exit(1)
 			}
 		}
 		if data.AgentId=="TRNG Generator"{
 			_, err := strconv.Atoi(string(data.Payload))
 			if err != nil{
 				log.Panic("[TestAgentExecution] expecting integer from TRNG Generator")
+				os.Exit(1)
 			}
 		}
 
@@ -200,23 +215,28 @@ func TestRemoveAgent(t *testing.T){
 
 	if len(manager.things) != expecting{
 		log.Panic("[TestRemoveAgent] thing list should contain ",expecting," entries. Found ",len(manager.things))
+		os.Exit(1)
 	}
 
 	if len(manager.uuids) != expecting{
 		log.Panic("[TestRemoveAgent] uuid list should contain ",expecting," entries. Found ",len(manager.uuids))
+		os.Exit(1)
 	}
 
 	if len(manager.thingFiles) != expecting{
 		log.Panic("[TestRemoveAgent] thing file list should contain ",expecting," entries. Found ",len(manager.thingFiles))
+		os.Exit(1)
 	}
 
 	if len(manager.agents) != expecting{
 		log.Panic("[TestRemoveAgent] agent list should contain ",expecting," entries. Found ",len(manager.agents))
+		os.Exit(1)
 	}
 
 	entries := scanDirectory(agentdir)
 	if len(entries) != expecting{
 		log.Panic("[TestRemoveAgent] directory should contain ",expecting," entries. Found ",len(entries))
+		os.Exit(1)
 	}
 }
 func TestLoadThing(t *testing.T){
@@ -233,6 +253,7 @@ func TestLoadThing(t *testing.T){
 	thing := loadThing(workingdir+"thing2.json")
 	if thing.Name != expecting{
 		log.Panic("[TestLoadThing] thing2.json not loaded")
+		os.Exit(1)
 	}
 
 
@@ -248,7 +269,8 @@ func TestLoadDoubleThings(t *testing.T){
 	things,thingfiles,_ := loadThings()
 	log.Println("[TestLoadValidThings] things found: ",len(things))
 	if (len(things) != expecting) || (len(thingfiles) != expecting) {
-			log.Panic("[TestLoadValidThings] things not loaded. Expecting ",expecting," valid things")
+		log.Panic("[TestLoadValidThings] things not loaded. Expecting ",expecting," valid things")
+		os.Exit(1)
 	}
 
 
@@ -267,6 +289,7 @@ func TestLoadEmptyThing_1(t *testing.T){
 	thing := loadThing(workingdir+"empty.json")
 	if !thing.IsEmpty(){
 		log.Panic("[TestLoadErrornousThing] Expected empty thing. ")
+		os.Exit(1)
 
 	}
 }
@@ -283,7 +306,7 @@ func TestLoadEmptyThing_2(t *testing.T){
 	thing := loadThing(workingdir+"empty2.json")
 	if !thing.IsEmpty(){
 		log.Panic("[TestLoadErrornousThing] Expected empty thing. ")
-
+		os.Exit(1)
 	}
 }
 func TestLoadWrongNameThing(t *testing.T){
@@ -298,7 +321,7 @@ func TestLoadWrongNameThing(t *testing.T){
 	thing := loadThing(workingdir+"notexisting.json")
 	if !thing.IsEmpty(){
 		log.Panic("[TestLoadWrongNameThing] Expected empty thing. ")
-
+		os.Exit(1)
 	}
 }
 //////// test validation of thing json files
@@ -314,6 +337,7 @@ func TestLoadValidThings(t *testing.T){
 	log.Println("[TestLoadValidThings] things found: ",len(things))
 	if (len(things) != expecting) || (len(thingfiles) != expecting) {
 		log.Panic("[TestLoadValidThings] things not loaded. Expecting ",expecting," valid things")
+		os.Exit(1)
 	}
 
 }
@@ -332,6 +356,7 @@ func TestScanDirectory(t *testing.T){
 	names := scanDirectory(workingdir)
 	if len(names) != expecting{
 		log.Panic("[TestScanDirectory] directory should contain ",expecting," json files. Found ",len(names))
+		os.Exit(1)
 	}
 }
 

@@ -9,6 +9,14 @@ import (
 	"path/filepath"
 )
 
+
+
+//func TestNothingDropzone(t *testing.T){
+//	time.Sleep(1)
+//	t.Fail()
+//	os.Exit(1)
+//}
+
 // test the extraction capability of the dropzone
 // putting two agent archives into the dropzone.
 // test extract data from one and compares it with proper values.
@@ -43,6 +51,7 @@ func TestDropzone(t *testing.T){
 
 	if c.thingFile!="42.json" || c.scriptFile !="42.sh" || c.archiveFile !="42.tar.gz" {
 		log.Panic("[TestDropzone] Wrong content from archive")
+		os.Exit(1)
 	}
 	// extraction test passed
 
@@ -54,15 +63,12 @@ func TestDropzone(t *testing.T){
 	// expects 0 archives in the dropzone.
 	if (len(dropzonefiles)!=0){
 		log.Panic("[TestDropzone] Expecting 0 archives in dropzone. Found ",len(dropzonefiles))
+		os.Exit(1)
 	}else{
 		log.Println("[TestDropzone] Found 0 archives in the dropzone. Good")
 	}
 
 	return
-}
-func TestNothingDropzone(t *testing.T){
-	time.Sleep(1)
-	//return
 }
 
 func prepareDropzone(){
@@ -75,7 +81,7 @@ func prepareDropzone(){
 	cpCmd := exec.Command("cp", "-f", srcFolder, destFolder)
 	err := cpCmd.Run()
 	if err!=nil{
-		println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 
@@ -90,7 +96,7 @@ func prepareBrokenDropzone(){
 	cpCmd := exec.Command("cp", "-f", srcFolder, destFolder)
 	err := cpCmd.Run()
 	if err!=nil{
-		println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }
@@ -104,7 +110,7 @@ func prepareDropzoneWithDoppelgaenger(){
 	cpCmd := exec.Command("cp", "-f", srcFolder, destFolder)
 	err := cpCmd.Run()
 	if err!=nil{
-		println(err.Error())
+		log.Println(err.Error())
 		return
 	}
 }

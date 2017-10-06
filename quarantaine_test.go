@@ -4,13 +4,15 @@ import (
 	"testing"
 	"log"
 	"time"
+	"os"
 )
 
-func TestNothing(t *testing.T){
-	log.Println("[TestNothing]")
-	time.Sleep(1)
-	//return
-}
+//func TestNothing(t *testing.T){
+//	log.Println("[TestNothing]")
+//	time.Sleep(1)
+//	t.Fail()
+//	os.Exit(1)
+//}
 
 func TestQuarantineWithDropzone(t *testing.T) {
 
@@ -51,6 +53,7 @@ func TestQuarantineWithDropzone(t *testing.T) {
 		case <-timeout:
 			{
 				log.Panic("[TestQuarantineWithDropzone] Timeout detected. Expected ",expecting," validated agents. Found : ",validatedAgentCounter)
+				os.Exit(1)
 			}
 
 		}
@@ -100,6 +103,7 @@ func TestQuarantineWithBrokenAgent(t *testing.T) {
 		case <-timeout:
 			{
 				log.Panic("[TestQuarantineWithBrokenAgent] Timeout detected. Expected ",expecting," validated agents. Found : ",validatedAgentCounter)
+				os.Exit(1)
 			}
 
 		}
