@@ -1,3 +1,4 @@
+GOPATH=´ṕwd´
 #!/bin/bash
 if [ ! -d "./agents" ]; then
   mkdir agents
