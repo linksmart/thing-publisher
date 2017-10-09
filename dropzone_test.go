@@ -47,7 +47,7 @@ func TestDropzone(t *testing.T){
 	log.Println("[TestDropzone] script file : ",c.scriptFile)
 	log.Println("[TestDropzone] archive file : ",c.archiveFile)
 
-	time.Sleep(time.Second*10)
+	time.Sleep(time.Second*3)
 	log.Println("[TestDropzone] woke up.")
 
 
