@@ -48,14 +48,19 @@ func TestDropzone(t *testing.T){
 	log.Println("[TestDropzone] archive file : ",c.archiveFile)
 
 	time.Sleep(time.Second*10)
+	log.Println("[TestDropzone] woke up.")
+
 
 	if c.thingFile!="42.json" || c.scriptFile !="42.sh" || c.archiveFile !="42.tar.gz" {
 		log.Panic("[TestDropzone] Wrong content from archive")
 		os.Exit(1)
 	}
+	log.Println("[TestDropzone] unpack test passed.")
 	// extraction test passed
 
 	dz.stopDropzone()
+	time.Sleep(time.Second * 1)
+	log.Println("[TestDropzone] dropzone stopped")
 	workingdir,_ := os.Getwd()
 	workingdir = workingdir+DROPZONE
 	dropzonefiles := scanDirectory(workingdir)
