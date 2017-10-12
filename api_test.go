@@ -134,7 +134,7 @@ func TestAPI(t *testing.T){
 	select {
 			case <- matrix.listthingsPassed:
 				log.Println("(1) listthing API test passed. GOOD")
-			case <- time.After(10*1e9):
+			case <- time.After(30*1e9):
 				log.Println("(1) listthing API timeout")
 				os.Exit(1)
 	}
@@ -145,7 +145,7 @@ func TestAPI(t *testing.T){
 	select {
 		case <- matrix.thingstatusPassed:
 			log.Println("(2) thingstatus API test passed. GOOD")
-		case <- time.After(10*1e9):
+		case <- time.After(30*1e9):
 			log.Println("(2) thingstatus API timeout")
 			os.Exit(1)
 	}
@@ -156,7 +156,7 @@ func TestAPI(t *testing.T){
 	select {
 	case <- matrix.removethingPassed:
 		log.Println("(3) removething API test passed. GOOD")
-	case <- time.After(10*1e9):
+	case <- time.After(30*1e9):
 		log.Println("(3) removething API timeout")
 		os.Exit(1)
 	}
