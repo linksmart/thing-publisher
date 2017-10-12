@@ -169,6 +169,7 @@ func TestAPI(t *testing.T){
 	}
 
 	// listthings API test
+	time.Sleep(time.Second*5)
 	client.Subscribe("LSTP/things",0,matrix.OnListThings)
 	time.Sleep(time.Second*5)
 	_ = client.Publish("LSTP/listthings", 0, false, "")
