@@ -29,6 +29,7 @@ func (matrix *TestResultmatrix) OnListThings(client MQTT.Client, msg MQTT.Messag
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"TRNG Generator") || strings.Contains(payload,"Temperature"){
 			matrix.listthingsPassed<-true
+			log.Println("[OnListThings] PAYLOAD: ", payload)
 			log.Println("[OnListThings] LSTP/listthings API works. GOOD")
 		}else {
 			log.Panic("[OnListThings] PAYLOAD: ", payload)
@@ -46,11 +47,10 @@ func (matrix *TestResultmatrix) OnListThings(client MQTT.Client, msg MQTT.Messag
 func (matrix *TestResultmatrix) OnUploadThing(client MQTT.Client, msg MQTT.Message) {
 
 
-	topic:= msg.Topic()
-	if topic == "LSTP/thing/Temperature"{
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"running"){
 			matrix.addthingarchivePassed<-true
+			log.Println("[OnThingStatus] PAYLOAD: ", payload)
 			log.Println("[OnUploadThing] LSTP/addthingarchive API works. GOOD")
 		}else {
 			//log.Panic("[OnThingStatus] PAYLOAD: ", payload)
@@ -58,17 +58,17 @@ func (matrix *TestResultmatrix) OnUploadThing(client MQTT.Client, msg MQTT.Messa
 			os.Exit(1)
 
 		}
-	}
+
 }
 
 func (matrix *TestResultmatrix) OnThingStatus(client MQTT.Client, msg MQTT.Message) {
 
 
-	topic:= msg.Topic()
-	if topic == "LSTP/thing/Temperature"{
+	//topic:= msg.Topic()
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"running"){
 			matrix.thingstatusPassed<-true
+			log.Println("[OnThingStatus] PAYLOAD: ", payload)
 			log.Println("[OnThingStatus] LSTP/thingstatus API works. GOOD")
 		}else {
 			log.Panic("[OnThingStatus] PAYLOAD: ", payload)
@@ -76,17 +76,15 @@ func (matrix *TestResultmatrix) OnThingStatus(client MQTT.Client, msg MQTT.Messa
 			os.Exit(1)
 
 		}
-	}
 
 }
 func (matrix *TestResultmatrix) OnRemoveThing(client MQTT.Client, msg MQTT.Message) {
 
 
-	topic:= msg.Topic()
-	if topic == "LSTP/thing/TRNG Generator"{
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"not available"){
 			matrix.removethingPassed<-true
+			log.Println("[OnRemoveThing] PAYLOAD: ", payload)
 			log.Println("[OnRemoveThing] LSTP/removething API works. GOOD")
 		}else {
 			log.Panic("[OnRemoveThing] PAYLOAD: ", payload)
@@ -94,7 +92,6 @@ func (matrix *TestResultmatrix) OnRemoveThing(client MQTT.Client, msg MQTT.Messa
 			os.Exit(1)
 
 		}
-	}
 
 }
 
