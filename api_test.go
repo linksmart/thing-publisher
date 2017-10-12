@@ -152,6 +152,7 @@ func TestAPI(t *testing.T){
 
 	// listthings API test
 	client.Subscribe("LSTP/things",0,matrix.OnListThings)
+	time.Sleep(time.Second*5)
 	_ = client.Publish("LSTP/listthings", 1, false, "")
 	select {
 			case <- matrix.listthingsPassed:
