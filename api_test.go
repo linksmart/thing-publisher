@@ -111,7 +111,6 @@ func TestAPI(t *testing.T){
 	manager := newAgentManager()
 	go manager.startAgentManager()
 	defer manager.stopAgentManager()
-	time.Sleep(time.Second * 5)
 
 	opts := MQTT.NewClientOptions().AddBroker(manager.mConfig.Broker)
 	//
@@ -121,6 +120,8 @@ func TestAPI(t *testing.T){
 				log.Fatal(token_connect.Error())
 	}
 	defer client.Disconnect(250)
+
+	time.Sleep(time.Second * VALIDATE_TIMER)
 
 	client.Subscribe("LSTP/things",0,matrix.OnListThings)
 	time.Sleep(time.Second*1)
