@@ -27,7 +27,7 @@ func (matrix *TestResultmatrix) OnListThings(client MQTT.Client, msg MQTT.Messag
 	topic:= msg.Topic()
 	if topic == "LSTP/things"{
 		payload := string(msg.Payload())
-		if strings.Contains(payload,"TRNG Generator") && strings.Contains(payload,"42"){
+		if strings.Contains(payload,"TRNG Generator") || strings.Contains(payload,"42"){
 			matrix.listthingsPassed<-true
 			log.Println("[OnListThings] LSTP/listthings API works. GOOD")
 		}else {
