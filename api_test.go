@@ -27,7 +27,7 @@ type TestResultmatrix struct {
 func (matrix *TestResultmatrix) OnListThings(client MQTT.Client, msg MQTT.Message) {
 
 		payload := string(msg.Payload())
-		if !strings.Contains(payload,"TRNG Generator") && strings.Contains(payload,"Temperature"){
+		if strings.Contains(payload,"TRNG Generator") && strings.Contains(payload,"42"){
 			matrix.listthingsPassed<-true
 			log.Println("[OnListThings] PAYLOAD: ", payload)
 			log.Println("[OnListThings] LSTP/listthings API works. GOOD")
@@ -122,6 +122,18 @@ func TestAPI(t *testing.T){
 	}
 	defer client.Disconnect(250)
 
+	client.Subscribe("LSTP/things",0,matrix.OnListThings)
+	time.Sleep(time.Second*1)
+	_ = client.Publish("LSTP/listthings", 0, false, "")
+	select {
+	case <- matrix.listthingsPassed:
+		log.Println("(1) listthing API test passed. GOOD")
+	case <- time.After(API_TIMEOUT):
+		log.Println("(1) listthing API timeout")
+		os.Exit(1)
+	}
+
+
 	// addarchive API test
 	client.Subscribe("LSTP/thing/Temperature",0,matrix.OnUploadThing)
 
@@ -138,24 +150,11 @@ func TestAPI(t *testing.T){
 	_ = client.Publish("LSTP/addthingarchive", 0, false, buffer)
 	select {
 	case <- matrix.addthingarchivePassed:
-		log.Println("(1) addthingarchive API test passed. GOOD")
+		log.Println("(2) addthingarchive API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
-		log.Println("(1) addthingarchive API timeout")
+		log.Println("(2) addthingarchive API timeout")
 		os.Exit(1)
 	}
-
-
-
-	// thingstatus API test
-/*	client.Subscribe("LSTP/thing/Temperature",0,matrix.OnThingStatus)
-	_ = client.Publish("LSTP/thingstatus/Temperature", 1, false, "")
-	select {
-		case <- matrix.thingstatusPassed:
-			log.Println("(3) thingstatus API test passed. GOOD")
-		case <- time.After(API_TIMEOUT):
-			log.Println("(3) thingstatus API timeout")
-			os.Exit(1)
-	}*/
 
 	// removething API test
 	client.Subscribe("LSTP/thing/TRNG Generator",0,matrix.OnRemoveThing)
@@ -168,23 +167,7 @@ func TestAPI(t *testing.T){
 		os.Exit(1)
 	}
 
-	// listthings API test
-	_ = client.Publish("LSTP/listthings", 0, false, "")
-	_ = client.Publish("LSTP/listthings", 0, false, "")
-	_ = client.Publish("LSTP/listthings", 0, false, "")
-	_ = client.Publish("LSTP/listthings", 0, false, "")
-	_ = client.Publish("LSTP/listthings", 0, false, "")
-	time.Sleep(time.Second*5)
-	client.Subscribe("LSTP/things",0,matrix.OnListThings)
-	time.Sleep(time.Second*1)
-	_ = client.Publish("LSTP/listthings", 0, false, "")
-	select {
-	case <- matrix.listthingsPassed:
-		log.Println("(3) listthing API test passed. GOOD")
-	case <- time.After(API_TIMEOUT):
-		log.Println("(3) listthing API timeout")
-		os.Exit(1)
-	}
+
 
 
 }
