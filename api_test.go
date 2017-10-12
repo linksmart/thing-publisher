@@ -164,9 +164,9 @@ func TestAPI(t *testing.T){
 	_ = client.Publish("LSTP/removething/TRNG Generator", 0, false, "")
 	select {
 	case <- matrix.removethingPassed:
-		log.Println("(2) removething API test passed. GOOD")
+		log.Println("(3) removething API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
-		log.Println("(2) removething API timeout")
+		log.Println("(3) removething API timeout")
 		os.Exit(1)
 	}
 	client.Unsubscribe("LSTP/thing/TRNG Generator")
