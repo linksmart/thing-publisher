@@ -133,6 +133,7 @@ func TestAPI(t *testing.T){
 		log.Println("(1) listthing API timeout")
 		os.Exit(1)
 	}
+	client.Unsubscribe("LSTP/things")
 
 
 	// addarchive API test
@@ -156,6 +157,7 @@ func TestAPI(t *testing.T){
 		log.Println("(2) addthingarchive API timeout")
 		os.Exit(1)
 	}
+	client.Unsubscribe("LSTP/thing/Temperature")
 
 	// removething API test
 	client.Subscribe("LSTP/thing/TRNG Generator",0,matrix.OnRemoveThing)
@@ -167,7 +169,7 @@ func TestAPI(t *testing.T){
 		log.Println("(2) removething API timeout")
 		os.Exit(1)
 	}
-
+	client.Unsubscribe("LSTP/thing/TRNG Generator")
 
 
 
