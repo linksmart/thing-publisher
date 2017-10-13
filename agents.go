@@ -51,11 +51,6 @@ type Datastream struct {
 
 type DataRequestType string
 
-const (
-	DataRequestTypeRead  DataRequestType = "READ"
-	DataRequestTypeWrite DataRequestType = "WRITE"
-)
-
 //
 // An envelope data structure for requests of data from services
 //
@@ -121,7 +116,7 @@ func (am *AgentManager) startAgentManager() {
 	go am.subscriber.startSubscriber()
 
 	for key,value := range am.things{
-		log.Println("[AgentManager] executing existing agents : ",value.Name)
+		log.Println("[AgentManager:startAgentManager] executing existing agents : ",value.Name)
 		cmdService,_ := am.executeAgent(value,am.uuids[value.Name])
 		am.agents[key] = cmdService
 	}
@@ -140,10 +135,10 @@ func (am *AgentManager) startAgentManager() {
 					if !t.IsEmpty() {
 						am.publisher.toPublish<-resp
 					}else{
-						log.Println("[startAgentManager] Thing with name ",resp.AgentId, "is empty. Skipping publish.")
+						log.Println("[AgentManager:startAgentManager] Thing with name ",resp.AgentId, "is empty. Skipping publish.")
 					}
 				}else{
-					log.Println("[startAgentManager] Thing with name ",resp.AgentId, "doesn't exist. Skipping publish.")
+					log.Println("[AgentManager:startAgentManager] Thing with name ",resp.AgentId, "doesn't exist. Skipping publish.")
 				}
 			}()
 
@@ -160,7 +155,7 @@ func (am *AgentManager) dropzoneListener() {
 	for {
 		select {
 		case fromDropzone = <-am.quarantine.dropzone.removedAgent:
-			log.Println("[dropzoneListener] agent removed : ", fromDropzone.scriptFile)
+			log.Println("[AgentManager:dropzoneListener] agent removed : ", fromDropzone.scriptFile)
 		}
 	}
 }
@@ -171,19 +166,19 @@ func (am *AgentManager) quarantineListener(){
 	for {
 		select {
 		case fromQuarantine = <-am.quarantine.validatedAgent:
-			log.Println("[quarantineListener] agent validated : ",fromQuarantine.thingFile)
+			log.Println("[AgentManager:quarantineListener] agent validated : ",fromQuarantine.thingFile)
 			aThing :=newThing(fromQuarantine)
 			if !aThing.IsEmpty(){
 				_,ok := am.things[aThing.Name]
 				if ok {
-					log.Println("[quarantineListener] ignoring thing with already existing ID: ",fromQuarantine.thingFile)
+					log.Println("[AgentManager:quarantineListener] ignoring thing with already existing ID: ",fromQuarantine.thingFile)
 					am.removeAgentFiles(fromQuarantine.uuid)
 				}else {
-					log.Println("[quarantineListener] thing loaded : ",fromQuarantine.thingFile)
+					log.Println("[AgentManager:quarantineListener] thing loaded : ",fromQuarantine.thingFile)
 					am.things[aThing.Name] = *aThing
 					am.thingFiles[aThing.Name] = fromQuarantine.thingFile
 					am.uuids[aThing.Name] = fromQuarantine.uuid
-					log.Println("[quarantineListener] executing thing : ", fromQuarantine.thingFile)
+					log.Println("[AgentManager:quarantineListener] executing thing : ", fromQuarantine.thingFile)
 					cmdService, _ := am.executeAgent(*aThing,am.uuids[aThing.Name])
 					am.agents[aThing.Name] = cmdService
 				}
@@ -199,17 +194,17 @@ func (am *AgentManager) stopAgentManager() bool{
 	go am.quarantine.stopQuarantine()
 
 	run_counter := len(am.things)
-	log.Println("[stop] agent counter :",run_counter)
+	log.Println("[AgentManager:stopAgentManager] agent counter :",run_counter)
 	for _,value := range am.things{
 		if (am.stopAgent(value)){
 			run_counter--
 		}
-		log.Println("[stop] agent counter :",run_counter)
+		log.Println("[AgentManager:stopAgentManager] agent counter :",run_counter)
 
 	}
 
 	if run_counter == 0{
-		log.Println("[stop] all agents stopped")
+		log.Println("[AgentManager:stopAgentManager] all agents stopped")
 		return true
 	}
 	return false
@@ -217,7 +212,7 @@ func (am *AgentManager) stopAgentManager() bool{
 func (am *AgentManager) stopAgent(stopme Thing) bool{
 
 	if am.agents[stopme.Name] != nil {
-		log.Println("[stopAgent] stopping agent with pid: ", am.agents[stopme.Name].Process.Pid)
+		log.Println("[AgentManager:stopAgent] stopping agent with pid: ", am.agents[stopme.Name].Process.Pid)
 		pid := am.agents[stopme.Name].Process.Pid
 		err := syscall.Kill(-pid, 15)
 		if err == nil {
@@ -227,17 +222,17 @@ func (am *AgentManager) stopAgent(stopme Thing) bool{
 
 
 
-		log.Println("[stopAgent] agent state      : -->",state.String(),"<--")
-		log.Println("[stopAgent] agent terminated : -->",strings.ContainsAny(state.String(),"terminated"),"<--")
+		log.Println("[AgentManager:stopAgent] agent state      : -->",state.String(),"<--")
+		log.Println("[AgentManager:stopAgent] agent terminated : -->",strings.ContainsAny(state.String(),"terminated"),"<--")
 
 		if  !strings.ContainsAny(state.String(),"terminated") || err != nil {
-			log.Println("process.Signal on pid %d returned: %v\n", pid, err)
+			log.Println("AgentManager:stopAgent] process.Signal on pid %d returned: %v\n", pid, err)
 			return false
 		}
 		return true
 
 	}else{
-		log.Println("[stopAgent] ignoring stop request for : ", stopme.Name)
+		log.Println("[AgentManager:stopAgent] ignoring stop request for : ", stopme.Name)
 		return false
 	}
 
@@ -253,7 +248,7 @@ func (am* AgentManager) removeAgentFiles(removeme uuid.UUID) bool{
 
 	workingdir := s+AGENT_DIR+removeme.String()
 
-	log.Println("[removeAgent] deleting agent files :",workingdir)
+	log.Println("[AgentManager:removeAgentFiles] deleting agent files :",workingdir)
 	os.RemoveAll(workingdir)
 
 	return true
@@ -261,20 +256,21 @@ func (am* AgentManager) removeAgentFiles(removeme uuid.UUID) bool{
 }
 func (am* AgentManager) removeAgent(removeme Thing) bool{
 
-
-	am.publisher.status2Publish<-AgentStatus{false,removeme.Name}
-	remove_uuid := am.uuids[removeme.Name]
-
+	log.Println("[AgentManager:removeAgent] removing agent: ",removeme.Name)
+	// stop agent script
 	if (!am.stopAgent(removeme)){
 		return false
 	}
+	// physically remove agent's files
+	am.removeAgentFiles(am.uuids[removeme.Name])
+	// notify subscribers
+	am.publisher.status2Publish<-AgentStatus{false,removeme.Name}
 
-	am.removeAgentFiles(remove_uuid)
-
+	// delete internal representation
 	delete(am.thingFiles,removeme.Name)
-	delete(am.things,removeme.Name)
-	delete(am.agents,removeme.Name)
 	delete(am.uuids,removeme.Name)
+	delete(am.agents,removeme.Name)
+	delete(am.things,removeme.Name)
 
 	return true
 }
@@ -303,7 +299,7 @@ func (am *AgentManager) executeAgent(thing Thing,uuid uuid.UUID)(*exec.Cmd,error
 	//defer serviceOutput.Close()
 
 	go func(out io.ReadCloser) {
-		log.Println("[executeService] executing script : ", workingdir+filename)
+		log.Println("[executeAgent:scriptloop] executing script : ", workingdir+filename)
 		scanner := bufio.NewScanner(out)
 		reply := AgentResponse{}
 		reply.AgentId = thing.Name
@@ -314,11 +310,11 @@ func (am *AgentManager) executeAgent(thing Thing,uuid uuid.UUID)(*exec.Cmd,error
 			reply.Payload = scanner.Bytes()
 			am.outputFromAgent <- reply
 			counter++
+			// TODO a tick / alive functionality can be added
 			if counter > (30+randomInRange(0,60)){
-				log.Println("[executeService:scriptloop] ",reply.AgentId +" is alive")
+				log.Println("[executeAgent:scriptloop] ",reply.AgentId +" is alive")
 				counter = 0
 			}
-			//log.Println("[executeService] stdout from script: ", string(scanner.Bytes()))
 		}
 		if err = scanner.Err(); err != nil {
 
@@ -326,7 +322,7 @@ func (am *AgentManager) executeAgent(thing Thing,uuid uuid.UUID)(*exec.Cmd,error
 			reply.IsError = true
 			reply.Payload = []byte(err.Error())
 			am.outputFromAgent <- reply
-			log.Println("[executeService] error from script: ", err.Error())
+			log.Println("[executeService:scriptloop] error from script: ", err.Error())
 		}
 		out.Close()
 	}(serviceOutput)
