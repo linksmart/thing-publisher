@@ -29,11 +29,11 @@ func (matrix *TestResultmatrix) OnListThings(client MQTT.Client, msg MQTT.Messag
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"TRNG Generator") && strings.Contains(payload,"42"){
 			matrix.listthingsPassed<-true
-			log.Println("[OnListThings] PAYLOAD: ", payload)
-			log.Println("[OnListThings] LSTP/listthings API works. GOOD")
+			log.Println("[TestAPI:OnListThings] PAYLOAD: ", payload)
+			log.Println("[TestAPI:OnListThings] LSTP/listthings API works. GOOD")
 		}else {
-			log.Panic("[OnListThings] PAYLOAD: ", payload)
-			log.Panic("[OnListThings] LSTP/listthings API broken")
+			log.Panic("[TestAPI:OnListThings] PAYLOAD: ", payload)
+			log.Panic("[TestAPI:OnListThings] LSTP/listthings API broken")
 			os.Exit(1)
 
 		}
@@ -47,45 +47,28 @@ func (matrix *TestResultmatrix) OnUploadThing(client MQTT.Client, msg MQTT.Messa
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"running"){
 			matrix.addthingarchivePassed<-true
-			log.Println("[OnThingStatus] PAYLOAD: ", payload)
-			log.Println("[OnUploadThing] LSTP/addthingarchive API works. GOOD")
+			log.Println("[TestAPI:OnThingStatus] PAYLOAD: ", payload)
+			log.Println("[TestAPI:OnUploadThing] LSTP/addthingarchive API works. GOOD")
 		}else {
 			//log.Panic("[OnThingStatus] PAYLOAD: ", payload)
-			log.Panic("[OnUploadThing] LSTP/addthingarchive API broken")
+			log.Panic("[TestAPI:OnUploadThing] LSTP/addthingarchive API broken")
 			os.Exit(1)
 
 		}
 
 }
 
-//func (matrix *TestResultmatrix) OnThingStatus(client MQTT.Client, msg MQTT.Message) {
-//
-//
-//	//topic:= msg.Topic()
-//		payload := string(msg.Payload())
-//		if strings.Contains(payload,"running"){
-//			matrix.thingstatusPassed<-true
-//			log.Println("[OnThingStatus] PAYLOAD: ", payload)
-//			log.Println("[OnThingStatus] LSTP/thingstatus API works. GOOD")
-//		}else {
-//			log.Panic("[OnThingStatus] PAYLOAD: ", payload)
-//			log.Panic("[OnThingStatus] LSTP/thingstatus API broken")
-//			os.Exit(1)
-//
-//		}
-//
-//}
 func (matrix *TestResultmatrix) OnRemoveThing(client MQTT.Client, msg MQTT.Message) {
 
 
 		payload := string(msg.Payload())
 		if strings.Contains(payload,"not available"){
 			matrix.removethingPassed<-true
-			log.Println("[OnRemoveThing] PAYLOAD: ", payload)
-			log.Println("[OnRemoveThing] LSTP/removething API works. GOOD")
+			log.Println("[TestAPI:OnRemoveThing] PAYLOAD: ", payload)
+			log.Println("[TestAPI:OnRemoveThing] LSTP/removething API works. GOOD")
 		}else {
-			log.Panic("[OnRemoveThing] PAYLOAD: ", payload)
-			log.Panic("[OnRemoveThing] LSTP/removething API broken")
+			log.Panic("[TestAPI:OnRemoveThing] PAYLOAD: ", payload)
+			log.Panic("[TestAPI:OnRemoveThing] LSTP/removething API broken")
 			os.Exit(1)
 
 		}
@@ -117,25 +100,31 @@ func TestAPI(t *testing.T){
 	client := MQTT.NewClient(opts)
 	//
 	if token_connect := client.Connect(); token_connect.Wait() && token_connect.Error() != nil {
-				log.Fatal(token_connect.Error())
+				log.Fatal("[TestAPI] ",token_connect.Error())
+				os.Exit(1)
 	}
 	defer client.Disconnect(250)
+	log.Println("[TestAPI] Connected to : ",manager.mConfig.Broker)
 
 	time.Sleep(time.Second * VALIDATE_TIMER)
 
+
+	// *********************
+	// listthings API test
 	client.Subscribe("LSTP/things",0,matrix.OnListThings)
 	time.Sleep(time.Second*1)
 	_ = client.Publish("LSTP/listthings", 0, false, "")
 	select {
 	case <- matrix.listthingsPassed:
-		log.Println("(1) listthing API test passed. GOOD")
+		log.Println("[TestAPI] (1) listthing API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
-		log.Println("(1) listthing API timeout")
+		log.Println("[TestAPI] (1) listthing API timeout")
 		os.Exit(1)
 	}
 	client.Unsubscribe("LSTP/things")
 
 
+	// *********************
 	// addarchive API test
 	client.Subscribe("LSTP/thing/Temperature",0,matrix.OnUploadThing)
 
@@ -144,29 +133,30 @@ func TestAPI(t *testing.T){
 	buffer := make([]byte,472)
 	_,err := thingarchive.Read(buffer)
 	if err == nil {
-		log.Println("[TestUploadThing] temperature.tar.gz archive loaded")
+		log.Println("[TestAPI] temperature.tar.gz archive loaded")
 	}else{
-		log.Panic("[TestUploadThing] temperature.tar.gz archive not loaded")
+		log.Panic("[TestAPI] temperature.tar.gz archive not loaded")
 		os.Exit(1)
 	}
 	_ = client.Publish("LSTP/addthingarchive", 0, false, buffer)
 	select {
 	case <- matrix.addthingarchivePassed:
-		log.Println("(2) addthingarchive API test passed. GOOD")
+		log.Println("[TestAPI] (2) addthingarchive API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
-		log.Println("(2) addthingarchive API timeout")
+		log.Println("[TestAPI] (2) addthingarchive API timeout")
 		os.Exit(1)
 	}
 	client.Unsubscribe("LSTP/thing/Temperature")
 
+	// *********************
 	// removething API test
 	client.Subscribe("LSTP/thing/TRNG Generator",0,matrix.OnRemoveThing)
 	_ = client.Publish("LSTP/removething/TRNG Generator", 0, false, "")
 	select {
 	case <- matrix.removethingPassed:
-		log.Println("(3) removething API test passed. GOOD")
+		log.Println("[TestAPI] (3) removething API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
-		log.Println("(3) removething API timeout")
+		log.Println("[TestAPI] (3) removething API timeout")
 		os.Exit(1)
 	}
 	client.Unsubscribe("LSTP/thing/TRNG Generator")
