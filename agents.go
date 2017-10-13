@@ -215,9 +215,9 @@ func (am *AgentManager) stopAgent(stopme Thing) bool{
 		log.Println("[AgentManager:stopAgent] stopping process with pid: ", am.agents[stopme.Name].Process.Pid)
 		pid := am.agents[stopme.Name].Process.Pid
 		err := syscall.Kill(-pid, 15)
-		if err == nil {
+		if err != nil {
 			log.Println("[AgentManager:stopAgent] ",err.Error())
-			// some clean up
+			return false
 		}
 		state,err := am.agents[stopme.Name].Process.Wait()
 		if state != nil {
