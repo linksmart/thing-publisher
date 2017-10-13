@@ -212,24 +212,27 @@ func (am *AgentManager) stopAgentManager() bool{
 func (am *AgentManager) stopAgent(stopme Thing) bool{
 
 	if am.agents[stopme.Name] != nil {
-		log.Println("[AgentManager:stopAgent] stopping agent with pid: ", am.agents[stopme.Name].Process.Pid)
+		log.Println("[AgentManager:stopAgent] stopping process with pid: ", am.agents[stopme.Name].Process.Pid)
 		pid := am.agents[stopme.Name].Process.Pid
 		err := syscall.Kill(-pid, 15)
 		if err == nil {
+			log.Println("[AgentManager:stopAgent] ",err.Error())
 			// some clean up
 		}
 		state,err := am.agents[stopme.Name].Process.Wait()
+		if state != nil {
+			log.Println("[AgentManager:stopAgent] process state      : -->", state.String(), "<--")
+			log.Println("[AgentManager:stopAgent] process terminated : -->", strings.ContainsAny(state.String(), "terminated"), "<--")
 
-
-
-		log.Println("[AgentManager:stopAgent] agent state      : -->",state.String(),"<--")
-		log.Println("[AgentManager:stopAgent] agent terminated : -->",strings.ContainsAny(state.String(),"terminated"),"<--")
-
-		if  !strings.ContainsAny(state.String(),"terminated") || err != nil {
-			log.Fatal("AgentManager:stopAgent] process.Signal on pid %d returned: %v\n", pid, err)
-			return false
+			if !strings.ContainsAny(state.String(), "terminated") || err != nil {
+				log.Fatal("AgentManager:stopAgent] process.Signal on pid %d returned: %v\n", pid, err)
+				return false
+			}
+			return true
+		}else{
+			log.Println("[AgentManager:stopAgent] process state unknown")
+			return true
 		}
-		return true
 
 	}else{
 		log.Println("[AgentManager:stopAgent] ignoring stop request for : ", stopme.Name)
