@@ -59,11 +59,13 @@ func (d* Dropzone) untarArchive(mpath string) {
 	defer fr.Close()
 	if err != nil {
 		log.Fatal("[Dropzone:untarArchive] File reader",err)
+		return
 	}
 	gr, err := gzip.NewReader(fr)
 	defer gr.Close()
 	if err != nil {
 		log.Fatal("[Dropzone:untarArchive] Gzip reader ",err)
+		return
 	}
 	tr := tar.NewReader(gr)
 
@@ -76,7 +78,8 @@ func (d* Dropzone) untarArchive(mpath string) {
 			break
 		}
 		if err != nil {
-			panic(err)
+			log.Fatal("[Dropzone:untarArchive] Reader ",err)
+			return
 		}
 		path := header.Name
 		//log.Println("[Dropzone:untarArchive] header name:",path)

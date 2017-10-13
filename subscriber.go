@@ -7,7 +7,6 @@ import (
 	"os"
 	"github.com/satori/go.uuid"
 	"io/ioutil"
-	xxh "bitbucket.org/StephaneBunel/xxhash-go"
 )
 
 type Subscriber struct {
@@ -15,7 +14,6 @@ type Subscriber struct {
 	subclient MQTT.Client
 	stop chan bool
 	agentManager *AgentManager
-	lastPayloadHash uint32
 	dropzoneDir string
 }
 func (c *Subscriber) ThingPublisherAPI(client MQTT.Client, msg MQTT.Message) {
@@ -25,15 +23,9 @@ func (c *Subscriber) ThingPublisherAPI(client MQTT.Client, msg MQTT.Message) {
 
 	switch {
 	case (msg.Topic()  == c.agentManager.mConfig.Prefix+c.agentManager.mConfig.AddThingArchiveTOPIC):
-		currentHash := xxh.Checksum32(msg.Payload())
-		if c.lastPayloadHash != currentHash{
-			c.lastPayloadHash = currentHash
-			uuid := uuid.NewV4()
-			_ = ioutil.WriteFile(c.dropzoneDir + uuid.String(), msg.Payload(), os.FileMode(0700))
-			log.Println("[Subscriber:ThingPublisherAPI] Thing archive written to :", c.dropzoneDir + uuid.String())
-		}else{
-			log.Println("[Subscriber:ThingPublisherAPI] identical thing archive arrived. Ignoring")
-		}
+		uuid := uuid.NewV4()
+		_ = ioutil.WriteFile(c.dropzoneDir + uuid.String(), msg.Payload(), os.FileMode(0700))
+		log.Println("[Subscriber:ThingPublisherAPI] Thing archive written to :", c.dropzoneDir + uuid.String())
 	case strings.Contains(msg.Topic(),c.agentManager.mConfig.RemoveThingTOPIC):
 		topic_splited := strings.Split(msg.Topic(),"/")
 		name := topic_splited[len(topic_splited)-1]
@@ -76,7 +68,6 @@ func newSubscriber(am *AgentManager) *Subscriber {
 		subclient: MQTT.NewClient(opts),
 		stop: make(chan bool),
 		agentManager: am,
-		lastPayloadHash: 0,
 		dropzoneDir: s+DROPZONE,
 	}
 	subscriber.topicmap[am.mConfig.Prefix+am.mConfig.AddThingArchiveTOPIC] = byte(0)
