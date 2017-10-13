@@ -135,10 +135,10 @@ func (am *AgentManager) startAgentManager() {
 					if !t.IsEmpty() {
 						am.publisher.toPublish<-resp
 					}else{
-						log.Println("[AgentManager:startAgentManager] Thing with name ",resp.AgentId, "is empty. Skipping publish.")
+						log.Println("[AgentManager:eventloop] Thing with name ",resp.AgentId, "is empty. Skipping publish.")
 					}
 				}else{
-					log.Println("[AgentManager:startAgentManager] Thing with name ",resp.AgentId, "doesn't exist. Skipping publish.")
+					log.Println("[AgentManager:eventloop] Thing with name ",resp.AgentId, "doesn't exist. Skipping publish.")
 				}
 			}()
 
@@ -226,7 +226,7 @@ func (am *AgentManager) stopAgent(stopme Thing) bool{
 		log.Println("[AgentManager:stopAgent] agent terminated : -->",strings.ContainsAny(state.String(),"terminated"),"<--")
 
 		if  !strings.ContainsAny(state.String(),"terminated") || err != nil {
-			log.Println("AgentManager:stopAgent] process.Signal on pid %d returned: %v\n", pid, err)
+			log.Fatal("AgentManager:stopAgent] process.Signal on pid %d returned: %v\n", pid, err)
 			return false
 		}
 		return true
@@ -249,7 +249,11 @@ func (am* AgentManager) removeAgentFiles(removeme uuid.UUID) bool{
 	workingdir := s+AGENT_DIR+removeme.String()
 
 	log.Println("[AgentManager:removeAgentFiles] deleting agent files :",workingdir)
-	os.RemoveAll(workingdir)
+	err := os.RemoveAll(workingdir)
+	if err!=nil {
+		log.Fatal("[AgentManager:removeAgentFiles] ",err.Error())
+		return false
+	}
 
 	return true
 
@@ -299,7 +303,7 @@ func (am *AgentManager) executeAgent(thing Thing,uuid uuid.UUID)(*exec.Cmd,error
 	//defer serviceOutput.Close()
 
 	go func(out io.ReadCloser) {
-		log.Println("[executeAgent:scriptloop] executing script : ", workingdir+filename)
+		log.Println("[AgentManager:executeAgent] executing script : ", workingdir+filename)
 		scanner := bufio.NewScanner(out)
 		reply := AgentResponse{}
 		reply.AgentId = thing.Name
@@ -312,7 +316,7 @@ func (am *AgentManager) executeAgent(thing Thing,uuid uuid.UUID)(*exec.Cmd,error
 			counter++
 			// TODO a tick / alive functionality can be added
 			if counter > (30+randomInRange(0,60)){
-				log.Println("[executeAgent:scriptloop] ",reply.AgentId +" is alive")
+				log.Println("[AgentManager:executeAgent] ",reply.AgentId +" is alive")
 				counter = 0
 			}
 		}
@@ -322,7 +326,7 @@ func (am *AgentManager) executeAgent(thing Thing,uuid uuid.UUID)(*exec.Cmd,error
 			reply.IsError = true
 			reply.Payload = []byte(err.Error())
 			am.outputFromAgent <- reply
-			log.Println("[executeService:scriptloop] error from script: ", err.Error())
+			log.Println("[AgentManager:executeAgent] error from script: ", err.Error())
 		}
 		out.Close()
 	}(serviceOutput)
@@ -344,11 +348,7 @@ func loadThings() (map[string]Thing,map[string]string,map[string]uuid.UUID){
     thingfilemap := make(map[string]string)
 	uuidmap := make(map[string]uuid.UUID)
 
-	log.Println("[loadThings] scanning dir: ",workingdir)
-
 	agentdirectories := scanDirectory(workingdir)
-
-	log.Println("[loadThings] sub-directories found : ",len(agentdirectories))
 
 	for _,uuid_dir := range agentdirectories{
 		log.Println("[loadThings] scanning agent files with uuid: ",uuid_dir)
@@ -396,20 +396,17 @@ func loadThing(thingfile string) *Thing {
 
 	if err !=nil || len(content) == 0 {
 		log.Println("[loadThing] Error reading thing file :",err.Error())
-		log.Println("[loadThing] Ignoring thing file : ",thingfile)
 		return &Thing{}
 	}
-
 
 	err = json.Unmarshal(content,&aThing)
 	if err != nil{
 		log.Println("[loadThing] Error unmarshaling data :",err)
-		log.Println("[loadThing] Ignoring thing file : ",thingfile)
 		return &Thing{}
 	}
 	//add more sophisticated validation ?
 	log.Println("[loadThing] Parsing thing candidate : ",aThing.Name)
-	log.Println("[loadThing] Datastreams : ",len(aThing.Datastreams))
+	//log.Println("[loadThing] Datastreams : ",len(aThing.Datastreams))
 	if(len(aThing.Datastreams) > 0){
 		if(aThing.Datastreams[0].Sensor != nil) {
 			if(len(aThing.Datastreams[0].Sensor.Metadata) > 0) {
