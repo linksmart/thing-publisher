@@ -248,12 +248,12 @@ func (am* AgentManager) removeAgentFiles(removeme uuid.UUID) bool{
 
 	workingdir := s+AGENT_DIR+removeme.String()
 
-	log.Println("[AgentManager:removeAgentFiles] deleting agent files :",workingdir)
 	err := os.RemoveAll(workingdir)
 	if err!=nil {
 		log.Fatal("[AgentManager:removeAgentFiles] ",err.Error())
 		return false
 	}
+	log.Println("[AgentManager:removeAgentFiles] agent files deleted from ",workingdir)
 
 	return true
 

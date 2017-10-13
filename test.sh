@@ -11,7 +11,7 @@ fi
 go test -v $1
 test_status=$?
 if [ $test_status -ne 0 ]; then
-    echo "command1 borked it"
+    echo "ERROR : received exitcode 1 from the test"
     exit 1
 fi
 if [ -d "./agents" ]; then
