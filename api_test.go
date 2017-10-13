@@ -106,7 +106,7 @@ func TestAPI(t *testing.T){
 	defer client.Disconnect(250)
 	log.Println("[TestAPI] Connected to : ",manager.mConfig.Broker)
 
-	time.Sleep(time.Second * VALIDATE_TIMER)
+	time.Sleep(time.Second * VALIDATE_TIMER*+5)
 
 
 	// *********************
