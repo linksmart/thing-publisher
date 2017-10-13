@@ -11,10 +11,10 @@ import (
 
 
 
-func TestNothingDropzone(t *testing.T){
-	go time.Sleep(10)
-
-}
+//func TestNothingDropzone(t *testing.T){
+//	go time.Sleep(10)
+//
+//}
 
 // test the extraction capability of the dropzone
 // putting two agent archives into the dropzone.

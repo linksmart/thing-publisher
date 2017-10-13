@@ -48,7 +48,7 @@ func (d* Dropzone) untarArchive(mpath string) {
 	unpackHere ,_ := os.Getwd()
 
 	unpackHere = unpackHere+AGENT_DIR+agent.uuid.String()
-	log.Println("[Dropzone:untraArchive] will unpack here: ",unpackHere)
+	log.Println("[Dropzone:untarArchive] will unpack here: ",unpackHere)
 	os.Mkdir(unpackHere, os.FileMode(0700))
 
 
@@ -58,12 +58,12 @@ func (d* Dropzone) untarArchive(mpath string) {
 	fr, err := read(mpath)
 	defer fr.Close()
 	if err != nil {
-		panic(err)
+		log.Fatal("[Dropzone:untarArchive] File reader",err)
 	}
 	gr, err := gzip.NewReader(fr)
 	defer gr.Close()
 	if err != nil {
-		panic(err)
+		log.Fatal("[Dropzone:untarArchive] Gzip reader ",err)
 	}
 	tr := tar.NewReader(gr)
 
@@ -102,7 +102,7 @@ func (d* Dropzone) untarArchive(mpath string) {
 			newfile := strings.Split(header.Name,"/")
 			outFile, err := os.Create(unpackHere+"/"+currentdir+"/"+newfile[len(newfile)-1])
 			if err != nil{
-				log.Fatalf("Dropzone:untarArchive] extraction failed: %s",err.Error())
+				log.Fatalf("[Dropzone:untarArchive] extraction failed: %s",err.Error())
 			}
 			defer outFile.Close()
 
