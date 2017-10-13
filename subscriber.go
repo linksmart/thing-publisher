@@ -18,26 +18,26 @@ type Subscriber struct {
 }
 func (c *Subscriber) ThingPublisherAPI(client MQTT.Client, msg MQTT.Message) {
 
-	log.Println("[ThingPublisherAPI] Command recieved : ",msg.Topic())
+	log.Println("[Subscriber:ThingPublisherAPI] Command recieved : ",msg.Topic())
 	topic_splited := strings.Split(msg.Topic(),"/")
 
 	switch {
 	case (msg.Topic()  == c.agentManager.mConfig.Prefix+c.agentManager.mConfig.AddThingArchiveTOPIC):
-		log.Println("[ThingPublisherAPI] Incoming thing archive")
+		log.Println("[Subscriber:ThingPublisherAPI] Incoming thing archive")
 		destination,_ := os.Getwd()
 		uuid := uuid.NewV4()
 		destination = destination+DROPZONE+uuid.String()
 		_ = ioutil.WriteFile(destination, msg.Payload(), os.FileMode(0700))
-		log.Println("[ThingPublisherAPI] Thing archive written to :",destination)
+		log.Println("[Subscriber:ThingPublisherAPI] Thing archive written to :",destination)
 	//case msg.Topic() == c.agentManager.mConfig.Prefix+c.agentManager.mConfig.RemoveThingTOPIC:
 	case strings.Contains(msg.Topic(),c.agentManager.mConfig.RemoveThingTOPIC):
 		name := topic_splited[len(topic_splited)-1]
-		log.Println("[ThingPublisherAPI] Trying to remove thing :",name)
+		log.Println("[Subscriber:ThingPublisherAPI] Trying to remove thing :",name)
 		if(!c.agentManager.removeAgent(c.agentManager.things[name])){
-			log.Println("[ThingPublisherAPI] No thing with ID : >>",name, "<< exists")
+			log.Println("[Subscriber:ThingPublisherAPI] No thing with ID : >>",name, "<< exists")
 		}
 	case msg.Topic() == c.agentManager.mConfig.Prefix+c.agentManager.mConfig.ListThingsTOPIC:
-		log.Println("[ThingPublisherAPI] Listing things")
+		log.Println("[Subscriber:ThingPublisherAPI] Listing things")
 		thingnames := "{\n"
 		for _,value := range c.agentManager.things{
 			thingnames = thingnames+"\"name\": \""+value.Name+"\",\n"
@@ -48,16 +48,16 @@ func (c *Subscriber) ThingPublisherAPI(client MQTT.Client, msg MQTT.Message) {
 		token.Wait()
 	case strings.Contains(msg.Topic(),c.agentManager.mConfig.ThingStatusTOPIC):
 		name := topic_splited[len(topic_splited)-1]
-		log.Println("[ThingPublisherAPI] Reporting status of thing "+name)
+		log.Println("[Subscriber:ThingPublisherAPI] Reporting status of thing "+name)
 		if _,ok := c.agentManager.things[name];ok{
 			c.agentManager.publisher.status2Publish<-AgentStatus{true,name}
 		}else{
-			log.Println("[ThingPublisherAPI] Thing with name >>",name,"<< doesn't exist")
+			log.Println("[Subscriber:ThingPublisherAPI] Thing with name >>",name,"<< doesn't exist")
 			c.agentManager.publisher.status2Publish<-AgentStatus{false,name}
 		}
 
 	default:
-		log.Println("[ThingPublisherAPI] unknown topic: ",msg.Topic())
+		log.Println("[Subscriber:ThingPublisherAPI] unknown topic: ",msg.Topic())
 
 	}
 	//fmt.Printf("Topic: %s, Message: %s\n", msg.Topic(), msg.Payload())
@@ -89,15 +89,15 @@ func (s *Subscriber) startSubscriber(){
 	if token := s.subclient.Connect(); token.Wait() && token.Error() != nil {
 		log.Fatal(token.Error())
 	}else{
-		log.Println("[startSubscriber] Subscriber connected to : ",s.agentManager.mConfig.Broker)
+		log.Println("[Subscriber:startSubscriber] Subscriber connected to : ",s.agentManager.mConfig.Broker)
 	}
 
 	s.subclient.SubscribeMultiple(s.topicmap,s.ThingPublisherAPI)
-	log.Println("[startSubscriber] Subscriber started")
+	log.Println("[Subscriber:startSubscriber] Subscriber started")
 
 }
 func (s *Subscriber) stopSubscriber(){
 	s.subclient.Disconnect(250)
-	log.Println("[startSubscriber] Subscriber stopped")
+	log.Println("[Subscriber:startSubscriber] Subscriber stopped")
 
 }

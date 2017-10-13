@@ -52,16 +52,16 @@ func loadConfig(confPath string) LSTPConfig {
 		println("Cannot unmarshal json")
 		return LSTPConfig{}
 	}
-	log.Println("[LSTPConfig] ID                           : ",aConfig.Id)
-	log.Println("[LSTPConfig] Description                  : ",aConfig.Description)
-	log.Println("[LSTPConfig] MQTT Broker URL              : ",aConfig.Broker)
-	log.Println("[LSTPConfig] Prefix                       : ",aConfig.Prefix)
-	log.Println("[LSTPConfig] Validate timer               : ",aConfig.ValidateTimer)
-	log.Println("[LSTPConfig] UUID generation              : ",aConfig.UUIDGeneration)
-	log.Println("[LSTPConfig] Add Thing Archive (MQTT-API) : ",aConfig.AddThingArchiveTOPIC)
-	log.Println("[LSTPConfig] List Things       (MQTT-API) : ",aConfig.ListThingsTOPIC)
-	log.Println("[LSTPConfig] Remove Thing      (MQTT-API) : ",aConfig.RemoveThingTOPIC)
-	log.Println("[LSTPConfig] Thing Status      (MQTT-API) : ",aConfig.ThingStatusTOPIC)
+	log.Println("[loadConfig] ID                           : ",aConfig.Id)
+	log.Println("[loadConfig] Description                  : ",aConfig.Description)
+	log.Println("[loadConfig] MQTT Broker URL              : ",aConfig.Broker)
+	log.Println("[loadConfig] Prefix                       : ",aConfig.Prefix)
+	log.Println("[loadConfig] Validate timer               : ",aConfig.ValidateTimer)
+	log.Println("[loadConfig] UUID generation              : ",aConfig.UUIDGeneration)
+	log.Println("[loadConfig] Add Thing Archive (MQTT-API) : ",aConfig.AddThingArchiveTOPIC)
+	log.Println("[loadConfig] List Things       (MQTT-API) : ",aConfig.ListThingsTOPIC)
+	log.Println("[loadConfig] Remove Thing      (MQTT-API) : ",aConfig.RemoveThingTOPIC)
+	log.Println("[loadConfig] Thing Status      (MQTT-API) : ",aConfig.ThingStatusTOPIC)
 
 	return aConfig
 

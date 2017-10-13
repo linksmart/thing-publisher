@@ -43,17 +43,17 @@ func newDropzone() *Dropzone {
 
 //TODO Refactoring needed
 func (d* Dropzone) untarArchive(mpath string) {
-	log.Println("[untarArchive] qualified path to unpack : ",mpath)
+	log.Println("[Dropzone:untarArchive] qualified path to unpack : ",mpath)
 	agent := AgentCandidate{"","","",false,uuid.NewV4()}
 	unpackHere ,_ := os.Getwd()
 
 	unpackHere = unpackHere+AGENT_DIR+agent.uuid.String()
-	log.Println("[untraArchive] will unpack here: ",unpackHere)
+	log.Println("[Dropzone:untraArchive] will unpack here: ",unpackHere)
 	os.Mkdir(unpackHere, os.FileMode(0700))
 
 
 	archive := strings.Split(mpath,"/")
-	log.Println("[untarArchive] will unpack archive : ",archive[len(archive)-1])
+	log.Println("[Dropzone:untarArchive] will unpack archive : ",archive[len(archive)-1])
 	agent.archiveFile = archive[len(archive)-1]
 	fr, err := read(mpath)
 	defer fr.Close()
@@ -79,7 +79,7 @@ func (d* Dropzone) untarArchive(mpath string) {
 			panic(err)
 		}
 		path := header.Name
-		log.Println("[untarArchive] header name:",path)
+		log.Println("[Dropzone:untarArchive] header name:",path)
 		a := strings.Split(path,"/")
 		if(len(a)==3) {
 			if (a[1] == "sensors" && a[2] != "") {
@@ -98,11 +98,11 @@ func (d* Dropzone) untarArchive(mpath string) {
 				log.Panic(err)
 			}
 		case tar.TypeReg:
-			log.Println("[untarArchive] unpacking file : ",header.Name)
+			log.Println("[Dropzone:untarArchive] unpacking file : ",header.Name)
 			newfile := strings.Split(header.Name,"/")
 			outFile, err := os.Create(unpackHere+"/"+currentdir+"/"+newfile[len(newfile)-1])
 			if err != nil{
-				log.Fatalf("ExtractTarGz: Create() failed: %s",err.Error())
+				log.Fatalf("Dropzone:untarArchive] extraction failed: %s",err.Error())
 			}
 			defer outFile.Close()
 
@@ -110,7 +110,7 @@ func (d* Dropzone) untarArchive(mpath string) {
 				log.Panic(err)
 			}
 		default:
-			log.Printf("Can't: %c, %s\n", header.Typeflag, path)
+			log.Printf("[Dropzone:untarArchive] Unknown header: %c, %s\n", header.Typeflag, path)
 		}
 	}
 
@@ -150,11 +150,11 @@ func (d *Dropzone) startDropzone(){
 
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Println("[startDropzone] Couldn't start dropzone")
+		log.Println("[Dropzone:startDropzone] Couldn't start dropzone")
 		log.Panic(err)
 	}
 	defer watcher.Close()
-	log.Println("[startDropzone] Dropzone started.")
+	log.Println("[Dropzone:startDropzone] Dropzone started.")
 
 	s,_ := os.Getwd()
 	go func() {
@@ -162,34 +162,34 @@ func (d *Dropzone) startDropzone(){
 			select{
 				case event:= <- watcher.Events:
 					if event.Op&fsnotify.Create == fsnotify.Create {
-						log.Println("[startDropzone] new file in the dropzone :", event.Name)
+						log.Println("[Dropzone:eventloop] new file in the dropzone :", event.Name)
 						go d.untarArchive(event.Name)
 					}else if event.Op&fsnotify.Remove == fsnotify.Remove {
-						log.Println("[startDropzone] removed file:", event.Name)
+						log.Println("[Dropzone:eventloop] removed file:", event.Name)
 					}
 				case err := <- watcher.Errors:
 					if err != nil {
-						log.Println("[startDropzone] error from watcher : ",err)
+						log.Println("[Dropzone:eventloop] error from watcher : ",err)
 					}
 			}
 		}
 
 	}()
 	toWatch := s+"/dropzone"
-	log.Println("[startDropzone] watching directory : ",toWatch)
+	log.Println("[Dropzone:startDropzone] watching directory : ",toWatch)
 	err = watcher.Add(toWatch)
 	if err != nil{
-		log.Panic("[startDropzone] Clouldn't add dir to watcher: ",err)
+		log.Panic("[Dropzone:startDropzone] Clouldn't add dir to watcher: ",err)
 	}
 	<-d.stop
-	log.Println("[startDropzone] Dropzone stopped.")
+	log.Println("[Dropzone:startDropzone] Dropzone stopped.")
 
 }
 func (d* Dropzone) removeArchive(ac AgentCandidate) bool{
 
 	s,_ := os.Getwd()
 
-	log.Println("[removeAgentCandidate] deleting :",s+DROPZONE+ac.archiveFile)
+	log.Println("[Dropzone:removeAgentCandidate] deleting :",s+DROPZONE+ac.archiveFile)
 	os.RemoveAll(s+DROPZONE+ac.archiveFile)
 
 	delete(d.archivesByScript,ac.scriptFile)

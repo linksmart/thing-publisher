@@ -53,14 +53,14 @@ func (p *Publisher) startPublisher(am *AgentManager){
 	p.manager = am
 
 	var f MQTT.MessageHandler = func(client MQTT.Client, msg MQTT.Message) {
-		log.Print("[Publisher] TOPIC: %s\n", msg.Topic())
-		log.Print("[Publisher] MSG: %s\n", msg.Payload())
+		log.Print("[Publisher:MessageHandler] TOPIC: %s\n", msg.Topic())
+		log.Print("[Publisher:MessageHandler] MSG: %s\n", msg.Payload())
 	}
 
 
 
 	opts := MQTT.NewClientOptions()
-	log.Println("[Publisher] Using MQTT broker: ",p.brokerUrl)
+	log.Println("[Publisher:startPublisher] Using MQTT broker: ",p.brokerUrl)
 	opts.AddBroker(p.brokerUrl)
 	opts.SetClientID(p.id)
 	opts.SetDefaultPublishHandler(f)
@@ -70,12 +70,12 @@ func (p *Publisher) startPublisher(am *AgentManager){
 		log.Panic(token.Error())
 	}
 	defer client.Disconnect(250)
-	log.Println("[Publisher] Connected to : ",p.brokerUrl)
+	log.Println("[Publisher:startPublisher] Connected to : ",p.brokerUrl)
 
 
 
 	go func() {
-		log.Println("[Publisher] Payload Publisher started.")
+		log.Println("[Publisher:startPublisher] Payload Publisher started.")
 		for {
 			data:=<-p.toPublish
 			// create payload/topic and publish
@@ -83,7 +83,7 @@ func (p *Publisher) startPublisher(am *AgentManager){
 				payload := SensorThingPayload{string(data.Payload),time.Now().UTC().Format(time.RFC3339)}
 				payloadJSON, err := json.Marshal(payload)
 				if err != nil {
-					log.Println("Error: %s", err)
+					log.Println("[Publisher:payloadloop] Error: %s", err)
 					return;
 				}
 				topic := p.manager.mConfig.Prefix+"Datastreams(" + data.AgentId + ")/" + p.manager.things[data.AgentId].Datastreams[0].Sensor.Description
@@ -93,7 +93,7 @@ func (p *Publisher) startPublisher(am *AgentManager){
 		}
 	}()
 	go func() {
-		log.Println("[Publisher] Status Publisher started.")
+		log.Println("[Publisher:startPublisher] Status Publisher started.")
 		for {
 			status:=<-p.status2Publish
 			// create payload/topic and publish
@@ -111,7 +111,7 @@ func (p *Publisher) startPublisher(am *AgentManager){
 		}
 	}()
 	<-p.stop
-	log.Println("[Publisher] Publisher stopped.")
+	log.Println("[Publisher:startPublisher] Publisher stopped.")
 
 
 }
