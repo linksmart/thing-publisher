@@ -205,9 +205,11 @@ func (am *AgentManager) stopAgentManager() bool{
 
 	if run_counter == 0{
 		log.Println("[AgentManager:stopAgentManager] all agents stopped")
-		return true
+	}else{
+		log.Println("[AgentManager:stopAgentManager] couldn't stop all agents")
+		return false
 	}
-	return false
+	return true
 }
 func (am *AgentManager) stopAgent(stopme Thing) bool{
 
@@ -235,8 +237,8 @@ func (am *AgentManager) stopAgent(stopme Thing) bool{
 		}
 
 	}else{
-		log.Println("[AgentManager:stopAgent] ignoring stop request for : ", stopme.Name)
-		return false
+		log.Println("[AgentManager:stopAgent] ",stopme.Name," doesn't exists. Ignoring stop request")
+		return true
 	}
 
 

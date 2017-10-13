@@ -150,8 +150,8 @@ func TestAPI(t *testing.T){
 
 	// *********************
 	// removething API test
-	client.Subscribe("LSTP/thing/TRNG Generator",0,matrix.OnRemoveThing)
-	_ = client.Publish("LSTP/removething/TRNG Generator", 0, false, "")
+	client.Subscribe("LSTP/thing/Temperature",0,matrix.OnRemoveThing)
+	_ = client.Publish("LSTP/removething/Temperature", 0, false, "")
 	select {
 	case <- matrix.removethingPassed:
 		log.Println("[TestAPI] (3) removething API test passed. GOOD")
