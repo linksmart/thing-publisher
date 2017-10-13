@@ -43,7 +43,7 @@ func newDropzone() *Dropzone {
 
 //TODO Refactoring needed
 func (d* Dropzone) untarArchive(mpath string) {
-	log.Println("[Dropzone:untarArchive] qualified path to unpack : ",mpath)
+	log.Println("[Dropzone:untarArchive] qualified filename to unpack : ",mpath)
 	agent := AgentCandidate{"","","",false,uuid.NewV4()}
 	unpackHere ,_ := os.Getwd()
 
@@ -53,7 +53,7 @@ func (d* Dropzone) untarArchive(mpath string) {
 
 
 	archive := strings.Split(mpath,"/")
-	log.Println("[Dropzone:untarArchive] will unpack archive : ",archive[len(archive)-1])
+	//log.Println("[Dropzone:untarArchive] will unpack archive : ",archive[len(archive)-1])
 	agent.archiveFile = archive[len(archive)-1]
 	fr, err := read(mpath)
 	defer fr.Close()
@@ -79,7 +79,7 @@ func (d* Dropzone) untarArchive(mpath string) {
 			panic(err)
 		}
 		path := header.Name
-		log.Println("[Dropzone:untarArchive] header name:",path)
+		//log.Println("[Dropzone:untarArchive] header name:",path)
 		a := strings.Split(path,"/")
 		if(len(a)==3) {
 			if (a[1] == "sensors" && a[2] != "") {
@@ -113,7 +113,6 @@ func (d* Dropzone) untarArchive(mpath string) {
 			log.Printf("[Dropzone:untarArchive] Unknown header: %c, %s\n", header.Typeflag, path)
 		}
 	}
-
 	// fill dropzone's internal inventory
 	d.archivesByScript[agent.scriptFile] = agent
 	setExecutable(unpackHere+SCRIPT_DIR+agent.scriptFile)
