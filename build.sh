@@ -11,5 +11,6 @@ do
   mkdir ./build/linux-$i/dropzone
   mkdir ./build/linux-$i/agents
   cd ./build/linux-$i/ && tar -zcvf "ThingPublisher-linux-$i-$VERSION.tar.gz" ./
+  sha256sum -b ThingPublisher-linux-$i-$VERSION.tar.gz > ThingPublisher-linux-$i-$VERSION.tar.gz.sha256
   cd ../../
 done
