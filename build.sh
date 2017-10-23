@@ -8,6 +8,7 @@ do
   cp -r ./conf ./build/linux-$i/
   sed -i "s/iot.eclipse.org/localhost/g" ./build/linux-$i/conf/thing-publisher.json
   cp LICENSE ./build/linux-$i/
+  cp README.md ./build/linux-$i/
   mkdir ./build/linux-$i/dropzone
   mkdir ./build/linux-$i/agents
   cd ./build/linux-$i/ && tar -zcvf "ThingPublisher-linux-$i-$VERSION.tar.gz" ./
