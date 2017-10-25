@@ -6,7 +6,7 @@ for i in  "${ARCH[@]}"
 do
   GOOS=linux GOARCH=$i go build -o ./build/linux-$i/thingpublisher -ldflags "-X main.Version=$VERSION" $1
   cp -r ./conf ./build/linux-$i/
-  sed -i "s/22883/1883/g" ./build/linux-$i/conf/thing-publisher.json
+  sed -i "s/iot.eclipse.org/localhost/g" ./build/linux-$i/conf/thing-publisher.json
   cp LICENSE ./build/linux-$i/
   cp README.md ./build/linux-$i/
   mkdir ./build/linux-$i/dropzone
