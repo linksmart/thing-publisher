@@ -10,7 +10,7 @@ import (
 	"os"
 )
 
-const API_TIMEOUT =30*1e9
+const API_TIMEOUT =40*1e9
 
 //func TestNoAPI(t *testing.T){
 //
