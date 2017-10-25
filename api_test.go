@@ -110,9 +110,9 @@ func TestAPI(t *testing.T){
 
 	// *********************
 	// listthings API test
-	client.Subscribe("LSTP/things",0,matrix.OnListThings)
+	client.Subscribe("LSTP/things",1,matrix.OnListThings)
 	time.Sleep(time.Second*3)
-	_ = client.Publish("LSTP/listthings", 0, false, "")
+	_ = client.Publish("LSTP/listthings", 1, false, "")
 	select {
 	case <- matrix.listthingsPassed:
 		log.Println("[TestAPI] (1) listthing API test passed. GOOD")
@@ -124,7 +124,7 @@ func TestAPI(t *testing.T){
 
 	// *********************
 	// addarchive API test
-	client.Subscribe("LSTP/thing/Temperature",0,matrix.OnUploadThing)
+	client.Subscribe("LSTP/thing/Temperature",1,matrix.OnUploadThing)
 
 	workdir,_ := os.Getwd()
 	thingarchive, _ := os.Open(workdir+ARCHIVES_DIR+"temperature.tar.gz")
@@ -136,7 +136,7 @@ func TestAPI(t *testing.T){
 		log.Panic("[TestAPI] temperature.tar.gz archive not loaded")
 		os.Exit(1)
 	}
-	_ = client.Publish("LSTP/addthingarchive", 0, false, buffer)
+	_ = client.Publish("LSTP/addthingarchive", 1, false, buffer)
 	select {
 	case <- matrix.addthingarchivePassed:
 		log.Println("[TestAPI] (2) addthingarchive API test passed. GOOD")
@@ -148,8 +148,8 @@ func TestAPI(t *testing.T){
 
 	// *********************
 	// removething API test
-	client.Subscribe("LSTP/thing/Temperature",0,matrix.OnRemoveThing)
-	_ = client.Publish("LSTP/removething/Temperature", 0, false, "")
+	client.Subscribe("LSTP/thing/Temperature",1,matrix.OnRemoveThing)
+	_ = client.Publish("LSTP/removething/Temperature", 1, false, "")
 	select {
 	case <- matrix.removethingPassed:
 		log.Println("[TestAPI] (3) removething API test passed. GOOD")
