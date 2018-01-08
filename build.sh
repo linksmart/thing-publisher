@@ -13,5 +13,12 @@ do
   mkdir ./build/linux-$i/agents
   cd ./build/linux-$i/ && tar -zcvf "ThingPublisher-linux-$i-$VERSION.tar.gz" ./
   sha256sum -b ThingPublisher-linux-$i-$VERSION.tar.gz > ThingPublisher-linux-$i-$VERSION.tar.gz.sha256
+  SHA_OUT=$?
+  if [ $SHA_OUT -eq 0 ];then
+    echo "linux/$i artifact build and check sum created, GOOD "
+  else
+    echo "Failed to create check sum for linux/$i. ERROR !"
+    exit 1
+fi
   cd ../../
 done
