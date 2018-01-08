@@ -32,6 +32,7 @@ type LSTPConfig struct {
 	Prefix         string 						`json:"prefix"`
 	ValidateTimer  int 							`json:"validatetimer"`
 	UUIDGeneration bool							`json:"uuidgeneration"`
+	UploadArchive bool 							`json:"uploadarchive"`
 	AddThingArchiveTOPIC string 				`json:"addthingarchive-topic"`
 	ListThingsTOPIC string 						`json:"listthings-topic"`
 	RemoveThingTOPIC string 					`json:"removething-topic"`
@@ -58,6 +59,7 @@ func loadConfig(confPath string) LSTPConfig {
 	log.Println("[loadConfig] Prefix                       : ",aConfig.Prefix)
 	log.Println("[loadConfig] Validate timer               : ",aConfig.ValidateTimer)
 	log.Println("[loadConfig] UUID generation              : ",aConfig.UUIDGeneration)
+	log.Println("[loadConfig] Archive upload allowed       : ",aConfig.UploadArchive)
 	log.Println("[loadConfig] Add Thing Archive (MQTT-API) : ",aConfig.AddThingArchiveTOPIC)
 	log.Println("[loadConfig] List Things       (MQTT-API) : ",aConfig.ListThingsTOPIC)
 	log.Println("[loadConfig] Remove Thing      (MQTT-API) : ",aConfig.RemoveThingTOPIC)

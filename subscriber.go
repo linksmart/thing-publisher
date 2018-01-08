@@ -70,7 +70,10 @@ func newSubscriber(am *AgentManager) *Subscriber {
 		agentManager: am,
 		dropzoneDir: s+DROPZONE,
 	}
-	subscriber.topicmap[am.mConfig.Prefix+am.mConfig.AddThingArchiveTOPIC] = byte(0)
+	if(am.mConfig.UploadArchive){
+		subscriber.topicmap[am.mConfig.Prefix+am.mConfig.AddThingArchiveTOPIC] = byte(0)
+		log.Println("[Subscriber:newSubscriber] remote upload of LSTP archives allowed. Modify thing-publisher.json to disable it")
+	}
 	subscriber.topicmap[am.mConfig.Prefix+am.mConfig.ListThingsTOPIC] = byte(0)
 	subscriber.topicmap[am.mConfig.Prefix+am.mConfig.RemoveThingTOPIC+"/#"] = byte(0)
 	subscriber.topicmap[am.mConfig.Prefix+am.mConfig.ThingStatusTOPIC+"/#"] = byte(0)

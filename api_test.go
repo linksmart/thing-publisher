@@ -112,13 +112,14 @@ func TestAPI(t *testing.T){
 	// listthings API test
 	client.Subscribe("LSTP/things",1,matrix.OnListThings)
 	time.Sleep(time.Second*3)
-	_ = client.Publish("LSTP/listthings", 1, false, "")
+	_ = client.Publish("LSTP/listthings", 1, false, "listhingspayload")
 	select {
-	case <- matrix.listthingsPassed:
-		log.Println("[TestAPI] (1) listthing API test passed. GOOD")
-	case <- time.After(API_TIMEOUT):
-		log.Println("[TestAPI] (1) listthing API timeout")
-		os.Exit(1)
+		case <- matrix.listthingsPassed:
+			client.Unsubscribe("LSTP/things")
+			log.Println("[TestAPI] (1) listthing API test passed. GOOD")
+		case <- time.After(API_TIMEOUT):
+			log.Println("[TestAPI] (1) listthing API timeout")
+			os.Exit(1)
 	}
 	client.Unsubscribe("LSTP/things")
 
@@ -139,6 +140,7 @@ func TestAPI(t *testing.T){
 	_ = client.Publish("LSTP/addthingarchive", 1, false, buffer)
 	select {
 	case <- matrix.addthingarchivePassed:
+		client.Unsubscribe("LSTP/thing/Temperature")
 		log.Println("[TestAPI] (2) addthingarchive API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
 		log.Println("[TestAPI] (2) addthingarchive API timeout")
@@ -152,6 +154,7 @@ func TestAPI(t *testing.T){
 	_ = client.Publish("LSTP/removething/Temperature", 1, false, "")
 	select {
 	case <- matrix.removethingPassed:
+		client.Unsubscribe("LSTP/thing/TRNG Generator")
 		log.Println("[TestAPI] (3) removething API test passed. GOOD")
 	case <- time.After(API_TIMEOUT):
 		log.Println("[TestAPI] (3) removething API timeout")
