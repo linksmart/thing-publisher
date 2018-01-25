@@ -29,6 +29,7 @@ type LSTPConfig struct {
 	Id             string                       `json:"id"`
 	Description    string                       `json:"description"`
 	Broker         string                       `json:"broker"`
+	ServiceCatalog string                       `json:"servicecatalog"`
 	Prefix         string 						`json:"prefix"`
 	ValidateTimer  int 							`json:"validatetimer"`
 	UUIDGeneration bool							`json:"uuidgeneration"`
@@ -50,20 +51,22 @@ func loadConfig(confPath string) LSTPConfig {
 	var aConfig LSTPConfig
 	err = json.Unmarshal(content,&aConfig)
 	if err != nil{
-		println("Cannot unmarshal json")
-		return LSTPConfig{}
+		log.Fatal("[loadConfig] Cannot unmarshal json")
+		os.Exit(1)
+		//return LSTPConfig{}
 	}
-	log.Println("[loadConfig] ID                           : ",aConfig.Id)
-	log.Println("[loadConfig] Description                  : ",aConfig.Description)
-	log.Println("[loadConfig] MQTT Broker URL              : ",aConfig.Broker)
-	log.Println("[loadConfig] Prefix                       : ",aConfig.Prefix)
-	log.Println("[loadConfig] Validate timer               : ",aConfig.ValidateTimer)
-	log.Println("[loadConfig] UUID generation              : ",aConfig.UUIDGeneration)
-	log.Println("[loadConfig] Archive upload allowed       : ",aConfig.UploadArchive)
-	log.Println("[loadConfig] Add Thing Archive (MQTT-API) : ",aConfig.AddThingArchiveTOPIC)
-	log.Println("[loadConfig] List Things       (MQTT-API) : ",aConfig.ListThingsTOPIC)
-	log.Println("[loadConfig] Remove Thing      (MQTT-API) : ",aConfig.RemoveThingTOPIC)
-	log.Println("[loadConfig] Thing Status      (MQTT-API) : ",aConfig.ThingStatusTOPIC)
+	log.Println("[loadConfig] ID                           	  : ",aConfig.Id)
+	log.Println("[loadConfig] Description               	      : ",aConfig.Description)
+	log.Println("[loadConfig] MQTT Broker URL              	  : ",aConfig.Broker)
+	log.Println("[loadConfig] Service Catalog URL              : ",aConfig.ServiceCatalog)
+	log.Println("[loadConfig] Prefix                       	  : ",aConfig.Prefix)
+	log.Println("[loadConfig] Validate timer               	  : ",aConfig.ValidateTimer)
+	log.Println("[loadConfig] UUID generation              	  : ",aConfig.UUIDGeneration)
+	log.Println("[loadConfig] Archive upload allowed       	  : ",aConfig.UploadArchive)
+	log.Println("[loadConfig] Add Thing Archive (MQTT-API) 	  : ",aConfig.AddThingArchiveTOPIC)
+	log.Println("[loadConfig] List Things       (MQTT-API) 	  : ",aConfig.ListThingsTOPIC)
+	log.Println("[loadConfig] Remove Thing      (MQTT-API) 	  : ",aConfig.RemoveThingTOPIC)
+	log.Println("[loadConfig] Thing Status      (MQTT-API) 	  : ",aConfig.ThingStatusTOPIC)
 
 	return aConfig
 

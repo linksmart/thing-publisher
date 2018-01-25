@@ -7,12 +7,30 @@ import (
 	"log"
 	"time"
 	"encoding/json"
+	"github.com/satori/go.uuid"
+	"code.linksmart.eu/sc/service-catalog/catalog"
+	SC "code.linksmart.eu/sc/service-catalog/client"
 )
+
+type RegistrationBase struct {
+	Id          		    string                 `json:"id,omitempty"`
+	Name		            string                 `json:"name,omitempty"`
+	Description             string 				   `json:"description,omitempty"`
+	Docs 					[]*RegistrationDocument
+	Ttl                     int 				   `json:"ttl,omitempty"`
+}
+type RegistrationDocument struct {
+	Description			    string				   `json:"description,omitempty"`
+	Apis                    []string			   `json:"apis,omitempty"`
+	Type                    string 				   `json:"type,omitempty"`
+	Url                     string                 `json:"url,omitempty"`
+}
 
 type SensorThingPayload struct {
 	Result     string                 `json:"result,omitempty"`
 	Time       string                 `json:"phenomenonTime,omitempty"`
 }
+
 type SensorThingTopic struct {
 	SensorID string
 	AreaID string
@@ -48,7 +66,7 @@ func newPublisher(aConfig LSTPConfig) *Publisher {
 func (p* Publisher) stopPublisher(){
 	p.stop<-true
 }
-func (p *Publisher) startPublisher(am *AgentManager){
+func (p *Publisher) startPublisher(am *AgentManager) {
 
 	p.manager = am
 
@@ -57,10 +75,8 @@ func (p *Publisher) startPublisher(am *AgentManager){
 		log.Print("[Publisher:MessageHandler] MSG: %s\n", msg.Payload())
 	}
 
-
-
 	opts := MQTT.NewClientOptions()
-	log.Println("[Publisher:startPublisher] Using MQTT broker: ",p.brokerUrl)
+	log.Println("[Publisher:startPublisher] Using MQTT broker: ", p.brokerUrl)
 	opts.AddBroker(p.brokerUrl)
 	opts.SetClientID(p.id)
 	opts.SetDefaultPublishHandler(f)
@@ -70,9 +86,23 @@ func (p *Publisher) startPublisher(am *AgentManager){
 		log.Panic(token.Error())
 	}
 	defer client.Disconnect(250)
-	log.Println("[Publisher:startPublisher] Connected to : ",p.brokerUrl)
+	log.Println("[Publisher:startPublisher] Connected to : ", p.brokerUrl)
 
 
+	service := catalog.Service{
+		ID:          uuid.NewV4().String(),
+		Name:		 "_linksmart-tp._tcp",
+		Description: "A publishing device connector",
+		APIs:        map[string]string{"MQTT API Specs": am.mConfig.Broker},
+		Docs: []catalog.Doc{{
+			Description: "MQTT API of the ThingPublsher service",
+			URL:         "",
+			Type:        "application/asyncapi+json;version=1.0",
+			APIs:        []string{"MQTT API Specs"},
+		}},
+		TTL:  120,
+	}
+	stopRegistrator, _ := SC.RegisterServiceAndKeepalive(am.mConfig.ServiceCatalog, service, nil)
 
 	go func() {
 		log.Println("[Publisher:startPublisher] Payload Publisher started.")
@@ -111,6 +141,7 @@ func (p *Publisher) startPublisher(am *AgentManager){
 		}
 	}()
 	<-p.stop
+	stopRegistrator()
 	log.Println("[Publisher:startPublisher] Publisher stopped.")
 
 

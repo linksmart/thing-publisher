@@ -2,6 +2,7 @@
   "id": "LSTP",
   "description": "Linksmart ThingPublisher",
   "broker": "tcp://iot.eclipse.org:1883",
+  "servicecatalog": "http://localhost:8082",
   "prefix": "LSTP/",
   "validatetimer": 8,
   "uuidgeneration": false,
