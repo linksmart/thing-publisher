@@ -3,6 +3,7 @@ VERSION="1.0.0-SNAPSHOT"
 
 ARCH=( amd64 arm )
 PLATFORM=linux
+go get code.linksmart.eu/sc/service-catalog/client
 for i in  "${ARCH[@]}"
 do
   GOOS=$PLATFORM GOARCH=$i go build -o ./build/linux-$i/thingpublisher -ldflags "-X main.Version=$VERSION" $1
