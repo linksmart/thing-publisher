@@ -8,6 +8,7 @@ fi
 if [ ! -d "./dropzone" ]; then
   mkdir dropzone
 fi
+go get code.linksmart.eu/sc/service-catalog/client
 go test -v $1
 test_status=$?
 if [ $test_status -ne 0 ]; then
