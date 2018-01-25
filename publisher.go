@@ -12,20 +12,6 @@ import (
 	SC "code.linksmart.eu/sc/service-catalog/client"
 )
 
-type RegistrationBase struct {
-	Id          		    string                 `json:"id,omitempty"`
-	Name		            string                 `json:"name,omitempty"`
-	Description             string 				   `json:"description,omitempty"`
-	Docs 					[]*RegistrationDocument
-	Ttl                     int 				   `json:"ttl,omitempty"`
-}
-type RegistrationDocument struct {
-	Description			    string				   `json:"description,omitempty"`
-	Apis                    []string			   `json:"apis,omitempty"`
-	Type                    string 				   `json:"type,omitempty"`
-	Url                     string                 `json:"url,omitempty"`
-}
-
 type SensorThingPayload struct {
 	Result     string                 `json:"result,omitempty"`
 	Time       string                 `json:"phenomenonTime,omitempty"`
