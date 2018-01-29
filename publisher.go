@@ -74,21 +74,26 @@ func (p *Publisher) startPublisher(am *AgentManager) {
 	defer client.Disconnect(250)
 	log.Println("[Publisher:startPublisher] Connected to : ", p.brokerUrl)
 
+	if (am.mConfig.ServiceRegistration==true) {
+		service := catalog.Service{
+			ID:          uuid.NewV4().String(),
+			Name:        "_linksmart-tp._tcp",
+			Description: "A publishing device connector",
+			APIs:        map[string]string{"MQTT API Specs": am.mConfig.Broker},
+			Docs: []catalog.Doc{{
+				Description: "MQTT API of the ThingPublsher service",
+				URL:         "",
+				Type:        "application/asyncapi+json;version=1.0",
+				APIs:        []string{"MQTT API Specs"},
+			}},
+			TTL: 120,
+		}
 
-	service := catalog.Service{
-		ID:          uuid.NewV4().String(),
-		Name:		 "_linksmart-tp._tcp",
-		Description: "A publishing device connector",
-		APIs:        map[string]string{"MQTT API Specs": am.mConfig.Broker},
-		Docs: []catalog.Doc{{
-			Description: "MQTT API of the ThingPublsher service",
-			URL:         "",
-			Type:        "application/asyncapi+json;version=1.0",
-			APIs:        []string{"MQTT API Specs"},
-		}},
-		TTL:  120,
+		stopRegistrator, _ := SC.RegisterServiceAndKeepalive(am.mConfig.ServiceCatalog, service, nil)
+		defer stopRegistrator()
+	}else{
+		log.Println("[Publisher:startPublisher] Service registration disabled.")
 	}
-	stopRegistrator, _ := SC.RegisterServiceAndKeepalive(am.mConfig.ServiceCatalog, service, nil)
 
 	go func() {
 		log.Println("[Publisher:startPublisher] Payload Publisher started.")
@@ -127,7 +132,6 @@ func (p *Publisher) startPublisher(am *AgentManager) {
 		}
 	}()
 	<-p.stop
-	stopRegistrator()
 	log.Println("[Publisher:startPublisher] Publisher stopped.")
 
 

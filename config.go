@@ -30,6 +30,7 @@ type LSTPConfig struct {
 	Description    string                       `json:"description"`
 	Broker         string                       `json:"broker"`
 	ServiceCatalog string                       `json:"servicecatalog"`
+	ServiceRegistration bool 					`json:"serviceregistration"`
 	Prefix         string 						`json:"prefix"`
 	ValidateTimer  int 							`json:"validatetimer"`
 	UUIDGeneration bool							`json:"uuidgeneration"`
@@ -59,6 +60,7 @@ func loadConfig(confPath string) LSTPConfig {
 	log.Println("[loadConfig] Description               	      : ",aConfig.Description)
 	log.Println("[loadConfig] MQTT Broker URL              	  : ",aConfig.Broker)
 	log.Println("[loadConfig] Service Catalog URL              : ",aConfig.ServiceCatalog)
+	log.Println("[loadConfig] Service registration             : ",aConfig.ServiceRegistration)
 	log.Println("[loadConfig] Prefix                       	  : ",aConfig.Prefix)
 	log.Println("[loadConfig] Validate timer               	  : ",aConfig.ValidateTimer)
 	log.Println("[loadConfig] UUID generation              	  : ",aConfig.UUIDGeneration)
