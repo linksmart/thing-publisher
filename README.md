@@ -1,6 +1,6 @@
 ## Synopsis
 
-LinkSmart® Thing Publisher (LSTP) is intended to continuously expose proprietary sensor data in the OGC SensorThing format.
+LinkSmart Thing Publisher (LSTP) is intended to continuously expose proprietary sensor data in the OGC SensorThing format.
 The OGC SensorThing output is published over MQTT. The prioprietary sensor data is delivered via executables like scripts
 or executable binaries. The exposing and formating of the data is done by the LSTP.
 
@@ -8,7 +8,7 @@ or executable binaries. The exposing and formating of the data is done by the LS
 
 Edit the conf\thing-publisher.json and configure the MQTT broker URL. The default value is pointing to a local broker.
 Execute the binary "thingpublisher". LSTP should be running now.
-More documentation can be found here: https://docs.linksmart.eu/pages/viewpage.action?pageId=7667857
+More documentation can be found here: https://docs.linksmart.eu/display/TP
 
 
 ## Hello World example
